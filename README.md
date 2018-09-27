@@ -1,6 +1,7 @@
 # SeemygoPVZCheater
 - 植物大战僵尸外挂（A cheater for Plants vs. Zoombies）
 - 代码的最后使用环境是：Visual Studio 2017
+- 游戏和外挂下载：[百度网盘](https://pan.baidu.com/s/1OkkmioqGZ7_ACfTAsDConw)
 
 
 
