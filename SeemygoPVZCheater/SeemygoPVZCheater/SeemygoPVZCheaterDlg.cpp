@@ -1,5 +1,5 @@
-
-// SeemygoPVZCheaterDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿
+// SeemygoPVZCheaterDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -11,28 +11,27 @@
 #define new DEBUG_NEW
 #endif
 
-// ¼à¿ØÏß³ÌµÄË¢ĞÂÊ±¼ä
+// ç›‘æ§çº¿ç¨‹çš„åˆ·æ–°æ—¶é—´
 #define MONITOR_REFRESH_TIME_INTERVAL 1000
 
-// Ö²Îï´óÕ½½©Ê¬µÄ½ø³Ì¾ä±ú
+// æ¤ç‰©å¤§æˆ˜åƒµå°¸çš„è¿›ç¨‹å¥æŸ„
 static HANDLE g_processHandle;
-// ÓÃÀ´¼à¿ØÖ²Îï´óÕ½½©Ê¬µÄÏß³Ì¾ä±ú
+// ç”¨æ¥ç›‘æ§æ¤ç‰©å¤§æˆ˜åƒµå°¸çš„çº¿ç¨‹å¥æŸ„
 static HANDLE g_monitoringThreadHandle;
-// ¸¨Öú´°¿Ú
+// è¾…åŠ©çª—å£
 static CSeemygoPVZCheaterDlg *g_dlg;
 
-// ½«Ä³¸öÖµĞ´ÈëÖ²Îï´óÕ½½©Ê¬ÄÚ´æ£¨ºóÃæµÄ¿É±ä²ÎÊıÊÇµØÖ·Á´£¬ÒªÒÔ-1½áÎ²£©
+// å°†æŸä¸ªå€¼å†™å…¥æ¤ç‰©å¤§æˆ˜åƒµå°¸å†…å­˜ï¼ˆåé¢çš„å¯å˜å‚æ•°æ˜¯åœ°å€é“¾ï¼Œè¦ä»¥-1ç»“å°¾ï¼‰
 void WriteMemory(void *value, DWORD valueSize, ...)
 {
-	if (value == NULL || valueSize == NULL || g_processHandle == NULL) return;
+	if (value == NULL || valueSize == 0 || g_processHandle == NULL) return;
 
-	DWORD tempValue = NULL;
+	DWORD tempValue = 0;
 
-	// ±éÀúËùÓĞµÄµØÖ·
 	va_list addresses;
 	va_start(addresses, valueSize);
-	DWORD offset = NULL;
-	DWORD lastAddress = NULL;
+	DWORD offset = 0;
+	DWORD lastAddress = 0;
 	while ((offset = va_arg(addresses, DWORD)) != -1)
 	{
 		lastAddress = tempValue + offset;
@@ -40,23 +39,26 @@ void WriteMemory(void *value, DWORD valueSize, ...)
 	}
 	va_end(addresses);
 
-	// Ğ´
 	::WriteProcessMemory(g_processHandle, (LPVOID)lastAddress, value, valueSize, NULL);
 }
 
-// ÓÃÀ´¼à¿ØÖ²Îï´óÕ½½©Ê¬µÄÏß³Ì
+void WriteMemory(void *value, DWORD valueSize, DWORD address) {
+	WriteMemory(value, valueSize, address, -1);
+}
+
+// ç”¨æ¥ç›‘æ§æ¤ç‰©å¤§æˆ˜åƒµå°¸çš„çº¿ç¨‹
 DWORD WINAPI MonitoringThreadProc(LPVOID lpParam)
 {
 	while (1)
 	{
-		// ÕÒ´°¿Ú
-		HWND hwnd = ::FindWindow(TEXT("MainWindow"), TEXT("Ö²Îï´óÕ½½©Ê¬ÖĞÎÄ°æ"));
+		// æ‰¾çª—å£
+		HWND hwnd = ::FindWindow(TEXT("MainWindow"), TEXT("æ¤ç‰©å¤§æˆ˜åƒµå°¸ä¸­æ–‡ç‰ˆ"));
 		if (hwnd == NULL)
 		{
 			::CloseHandle(g_processHandle);
 			g_processHandle = NULL;
 
-			// ½ûÖ¹µã»÷
+			// ç¦æ­¢ç‚¹å‡»
 			g_dlg->m_sunshine.SetCheck(FALSE);
 			g_dlg->m_sunshine.EnableWindow(FALSE);
 
@@ -85,14 +87,14 @@ DWORD WINAPI MonitoringThreadProc(LPVOID lpParam)
 		}
 		else if (g_processHandle == NULL)
 		{
-			// ÕÒ½ø³ÌID
+			// æ‰¾è¿›ç¨‹ID
 			DWORD pid = NULL;
 			::GetWindowThreadProcessId(hwnd, &pid);
 
-			// ÕÒ½ø³Ì¾ä±ú
+			// æ‰¾è¿›ç¨‹å¥æŸ„
 			g_processHandle = ::OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 
-			// ¿ªÆôµã»÷
+			// å¼€å¯ç‚¹å‡»
 			g_dlg->m_sunshine.EnableWindow(TRUE);
 			g_dlg->m_unbreakable.EnableWindow(TRUE);
 			g_dlg->m_cd.EnableWindow(TRUE);
@@ -104,7 +106,7 @@ DWORD WINAPI MonitoringThreadProc(LPVOID lpParam)
 		}
 
 		if (g_dlg->m_sunshine.GetCheck())
-		{ // Èç¹ûĞèÒªÎŞÏŞÑô¹â
+		{ // å¦‚æœéœ€è¦æ— é™é˜³å…‰
 			DWORD value = 9990;
 			WriteMemory(&value, sizeof(value), 0x6A9EC0, 0x320, 0x8, 0x0, 0x8, 0x144, 0x2c, 0x5560, -1);
 		}
@@ -114,17 +116,17 @@ DWORD WINAPI MonitoringThreadProc(LPVOID lpParam)
 	return 0;
 }
 
-// Õë¶ÔXPÌá¸ß³ÌĞòµÄ·ÃÎÊÈ¨ÏŞ
+// é’ˆå¯¹XPæé«˜ç¨‹åºçš„è®¿é—®æƒé™
 BOOL ImproveAccessPrivilege()
 {
 	HANDLE tokenHandle;
 	LUID privilegeValue;
 
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle)) return FALSE;
+	if (!::OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle)) return FALSE;
 
 	if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &privilegeValue))
 	{
-		CloseHandle(tokenHandle);
+		::CloseHandle(tokenHandle);
 		return FALSE;
 	}
 
@@ -133,30 +135,30 @@ BOOL ImproveAccessPrivilege()
 	privileges.Privileges[0].Luid = privilegeValue;
 	privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-	if (!AdjustTokenPrivileges(tokenHandle, FALSE, &privileges, sizeof(privileges), NULL, NULL))
+	if (!::AdjustTokenPrivileges(tokenHandle, FALSE, &privileges, sizeof(privileges), NULL, NULL))
 	{
-		CloseHandle(tokenHandle);
+		::CloseHandle(tokenHandle);
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
-// ÓÃÓÚÓ¦ÓÃ³ÌĞò¡°¹ØÓÚ¡±²Ëµ¥ÏîµÄ CAboutDlg ¶Ô»°¿ò
+// ç”¨äºåº”ç”¨ç¨‹åºâ€œå…³äºâ€èœå•é¡¹çš„ CAboutDlg å¯¹è¯æ¡†
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ¶Ô»°¿òÊı¾İ
+	// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -174,7 +176,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSeemygoPVZCheaterDlg ¶Ô»°¿ò
+// CSeemygoPVZCheaterDlg å¯¹è¯æ¡†
 CSeemygoPVZCheaterDlg::CSeemygoPVZCheaterDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_SEEMYGOPVZCHEATER_DIALOG, pParent)
 {
@@ -214,14 +216,14 @@ BEGIN_MESSAGE_MAP(CSeemygoPVZCheaterDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSeemygoPVZCheaterDlg ÏûÏ¢´¦Àí³ÌĞò
+// CSeemygoPVZCheaterDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 BOOL CSeemygoPVZCheaterDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -239,28 +241,28 @@ BOOL CSeemygoPVZCheaterDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£  µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚  å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// Õë¶ÔXPÏµÍ³Ìá¸ß³ÌĞòµÄÈ¨ÏŞ
+	// é’ˆå¯¹XPç³»ç»Ÿæé«˜ç¨‹åºçš„æƒé™
 	ImproveAccessPrivilege();
 
-	// ¸¨Öú´°¿Ú
+	// è¾…åŠ©çª—å£
 	g_dlg = this;
 
-	// Æô¶¯¼à¿ØÏß³Ì
+	// å¯åŠ¨ç›‘æ§çº¿ç¨‹
 	g_monitoringThreadHandle = ::CreateThread(NULL, 0, MonitoringThreadProc, NULL, 0, NULL);
 
-	// ¼ÓÔØ°æÈ¨ËùÓĞµÄÊó±ê
-	m_copyrightCursor = ::LoadCursor(NULL, IDC_HAND);
+	// åŠ è½½ç‰ˆæƒæ‰€æœ‰çš„é¼ æ ‡
+	m_copyrightCursor = LoadCursor(NULL, IDC_HAND);
 
-	// °æÈ¨ËùÓĞµÄ¾ØĞÎ¿ò
+	// ç‰ˆæƒæ‰€æœ‰çš„çŸ©å½¢æ¡†
 	this->m_copyright.GetWindowRect(&m_copyrightRect);
 	ScreenToClient(&m_copyrightRect);
 
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CSeemygoPVZCheaterDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -276,19 +278,19 @@ void CSeemygoPVZCheaterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£  ¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚  å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CSeemygoPVZCheaterDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -296,7 +298,7 @@ void CSeemygoPVZCheaterDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -305,8 +307,8 @@ void CSeemygoPVZCheaterDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CSeemygoPVZCheaterDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -341,30 +343,30 @@ HBRUSH CSeemygoPVZCheaterDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	if (pWnd->GetDlgCtrlID() == IDC_COPYRIGHT)
 	{
-		// ÎÄ×ÖÎªºìÉ«
+		// æ–‡å­—ä¸ºçº¢è‰²
 		pDC->SetTextColor(RGB(0, 0, 255));
 	}
 
 	return hbr;
 }
 
-// ¹Ø±Õ´°¿Ú
+// å…³é—­çª—å£
 void CSeemygoPVZCheaterDlg::OnClose()
 {
 	CDialogEx::OnClose();
 
-	// È¥µôÍâ¹ÒĞ§¹û
+	// å»æ‰å¤–æŒ‚æ•ˆæœ
 	this->OnBnClickedCancel();
 
-	// É±ËÀÏß³Ì
+	// æ€æ­»çº¿ç¨‹
 	::TerminateThread(g_monitoringThreadHandle, 0);
 	::CloseHandle(g_monitoringThreadHandle);
 
-	// ¹Ø±Õ¾ä±ú
+	// å…³é—­å¥æŸ„
 	::CloseHandle(g_processHandle);
 }
 
-// Ö²Îï²»ËÀ-checkbox
+// æ¤ç‰©ä¸æ­»-checkbox
 void CSeemygoPVZCheaterDlg::OnBnClickedUnbreakable()
 {
 	DWORD address1 = 0x52FCF0;
@@ -372,143 +374,143 @@ void CSeemygoPVZCheaterDlg::OnBnClickedUnbreakable()
 	DWORD address3 = 0x45EC63;
 	DWORD address4 = 0x46CFEB;
 	if (this->m_unbreakable.GetCheck())
-	{ // Èç¹ûĞèÒªÖ²Îï²»ËÀ
+	{ // å¦‚æœéœ€è¦æ¤ç‰©ä¸æ­»
 		BYTE data1[] = { 0x90, 0x90, 0x90, 0x90 };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x90, 0x90, 0x90 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x90, 0x90, 0x90, 0x90 };
-		WriteMemory(data3, sizeof(data3), address3, -1);
+		WriteMemory(data3, sizeof(data3), address3);
 
 		BYTE data4[] = { 0x90, 0x90, 0x90 };
-		WriteMemory(data4, sizeof(data4), address4, -1);
+		WriteMemory(data4, sizeof(data4), address4);
 	}
 	else
-	{ // Èç¹û²»ĞèÒªÖ²Îï²»ËÀ
+	{ // å¦‚æœä¸éœ€è¦æ¤ç‰©ä¸æ­»
 		BYTE data1[] = { 0x83, 0x46, 0x40, 0xFC };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x29, 0x4E, 0X40 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x83, 0x46, 0x40, 0xCE };
-		WriteMemory(data3, sizeof(data3), address3, -1);
+		WriteMemory(data3, sizeof(data3), address3);
 
 		BYTE data4[] = { 0x29, 0x50, 0x40 };
-		WriteMemory(data4, sizeof(data4), address4, -1);
+		WriteMemory(data4, sizeof(data4), address4);
 	}
 }
 
-// ÎŞCD-checkbox
+// æ— CD-checkbox
 void CSeemygoPVZCheaterDlg::OnBnClickedCd()
 {
 	DWORD address = 0x487296;
 	if (this->m_cd.GetCheck())
-	{ // Èç¹ûĞèÒªÎŞCD
+	{ // å¦‚æœéœ€è¦æ— CD
 		BYTE data[] = { 0x90, 0x90 };
-		WriteMemory(data, sizeof(data), address, -1);
+		WriteMemory(data, sizeof(data), address);
 	}
 	else
-	{ // Èç¹û²»ĞèÒªÎŞCD
+	{ // å¦‚æœä¸éœ€è¦æ— CD
 		BYTE data[] = { 0x7E, 0x14 };
-		WriteMemory(data, sizeof(data), address, -1);
+		WriteMemory(data, sizeof(data), address);
 	}
 }
 
-// ºóÌ¨ÔËĞĞ
+// åå°è¿è¡Œ
 void CSeemygoPVZCheaterDlg::OnBnClickedBackground()
 {
 	DWORD address = 0x54E1C2;
 	if (this->m_background.GetCheck())
-	{ // Èç¹ûĞèÒªºóÌ¨ÔËĞĞ
+	{ // å¦‚æœéœ€è¦åå°è¿è¡Œ
 		BYTE data[] = { 0x90, 0x90, 0x90 };
-		WriteMemory(data, sizeof(data), address, -1);
+		WriteMemory(data, sizeof(data), address);
 	}
 	else
-	{ // Èç¹û²»ĞèÒªºóÌ¨ÔËĞĞ
+	{ // å¦‚æœä¸éœ€è¦åå°è¿è¡Œ
 		BYTE data[] = { 0x0F, 0x95, 0xC0 };
-		WriteMemory(data, sizeof(data), address, -1);
+		WriteMemory(data, sizeof(data), address);
 	}
 }
 
-// ÃëÉ±½©Ê¬
+// ç§’æ€åƒµå°¸
 void CSeemygoPVZCheaterDlg::OnBnClickedKill()
 {
 	DWORD address1 = 0x53130F;
 	DWORD address2 = 0x531066;
 	DWORD address3 = 0x530CB1;
 	if (this->m_kill.GetCheck())
-	{ // Èç¹ûĞèÒªÃëÉ±½©Ê¬
-	  // È¥³ı½©Ê¬²»ËÀ
+	{ // å¦‚æœéœ€è¦ç§’æ€åƒµå°¸
+	  // å»é™¤åƒµå°¸ä¸æ­»
 		g_dlg->m_zoombieUnbreakable.SetCheck(FALSE);
 		g_dlg->OnBnClickedZoombieUnbreakable();
 
 		BYTE data1[] = { 0x2B, 0xFF, 0x90, 0x90 };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x90, 0x90 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x90, 0x90 };
-		WriteMemory(data3, sizeof(data3), address3, -1);
+		WriteMemory(data3, sizeof(data3), address3);
 	}
 	else
-	{ // Èç¹û²»ĞèÒªÃëÉ±½©Ê¬
+	{ // å¦‚æœä¸éœ€è¦ç§’æ€åƒµå°¸
 		BYTE data1[] = { 0x2B, 0x7C, 0x24, 0x20 };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x75, 0x11 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x75, 0x17 };
-		WriteMemory(data3, sizeof(data3), address3, -1);
+		WriteMemory(data3, sizeof(data3), address3);
 	}
 }
 
-// ½©Ê¬²»ËÀ
+// åƒµå°¸ä¸æ­»
 void CSeemygoPVZCheaterDlg::OnBnClickedZoombieUnbreakable()
 {
 	DWORD address1 = 0x53130F;
 	DWORD address2 = 0x531042;
 	DWORD address3 = 0x530C9F;
 	if (this->m_zoombieUnbreakable.GetCheck())
-	{ // Èç¹ûĞèÒª½©Ê¬²»ËÀ
-	  // È¥³ıÃëÉ±½©Ê¬
+	{ // å¦‚æœéœ€è¦åƒµå°¸ä¸æ­»
+	  // å»é™¤ç§’æ€åƒµå°¸
 		g_dlg->m_kill.SetCheck(FALSE);
 		g_dlg->OnBnClickedKill();
 
 		BYTE data1[] = { 0x83, 0xEF, 0x00, 0x90 };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x90, 0x90, 0x90, 0x90 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 		WriteMemory(data3, sizeof(data3), address3, -1);
 	}
 	else
-	{ // Èç¹û²»ĞèÒª½©Ê¬²»ËÀ
+	{ // å¦‚æœä¸éœ€è¦åƒµå°¸ä¸æ­»
 		BYTE data1[] = { 0x2B, 0x7C, 0x24, 0x20 };
-		WriteMemory(data1, sizeof(data1), address1, -1);
+		WriteMemory(data1, sizeof(data1), address1);
 
 		BYTE data2[] = { 0x2B, 0xF0, 0x2B, 0xC8 };
-		WriteMemory(data2, sizeof(data2), address2, -1);
+		WriteMemory(data2, sizeof(data2), address2);
 
 		BYTE data3[] = { 0x2B, 0xD0, 0x29, 0x86, 0xDC, 0x00, 0x00, 0x00 };
-		WriteMemory(data3, sizeof(data3), address3, -1);
+		WriteMemory(data3, sizeof(data3), address3);
 	}
 }
 
-// ÎŞÏŞ½ğ±Ò
+// æ— é™é‡‘å¸
 void CSeemygoPVZCheaterDlg::OnBnClickedCoin()
 {
 	DWORD value = 99990;
 	WriteMemory(&value, sizeof(value), 0x6A9EC0, 0x82C, 0x28, -1);
 }
 
-// Ò»¼üÈ¡Ïû
+// ä¸€é”®å–æ¶ˆ
 void CSeemygoPVZCheaterDlg::OnBnClickedCancel()
 {
 	this->m_sunshine.SetCheck(FALSE);
@@ -529,10 +531,12 @@ void CSeemygoPVZCheaterDlg::OnBnClickedCancel()
 	this->OnBnClickedZoombieUnbreakable();
 }
 
-// »ñÈ¡Íâ¹Ò¿ª·¢½Ì³Ì
+// è·å–å¤–æŒ‚å¼€å‘æ•™ç¨‹
 void CSeemygoPVZCheaterDlg::OnBnClickedCourse()
 {
-	::ShellExecute(NULL, TEXT("open"), 
-		TEXT("https://ke.qq.com/course/336509"), 
+	ShellExecute(
+		NULL,
+		CString("open"),
+		CString("https://ke.qq.com/course/336509"),
 		NULL, NULL, SW_SHOWNORMAL);
 }

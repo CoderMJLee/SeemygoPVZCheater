@@ -1,32 +1,33 @@
-
-// SeemygoPVZCheaterDlg.h : Í·ÎÄ¼ş
+ï»¿
+// SeemygoPVZCheaterDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
 #include "afxwin.h"
 
 
-// CSeemygoPVZCheaterDlg ¶Ô»°¿ò
+// CSeemygoPVZCheaterDlg å¯¹è¯æ¡†
 class CSeemygoPVZCheaterDlg : public CDialogEx
 {
-// ¹¹Ôì
+	friend DWORD WINAPI MonitoringThreadProc(LPVOID);
+// æ„é€ 
 public:
-	CSeemygoPVZCheaterDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
+	CSeemygoPVZCheaterDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_SEEMYGOPVZCHEATER_DIALOG };
 #endif
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -35,7 +36,7 @@ protected:
 	
 	HCURSOR  m_copyrightCursor;
 	RECT  m_copyrightRect;
-public:
+private:
 	afx_msg void OnBnClickedCoin();
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedUnbreakable();
@@ -43,6 +44,11 @@ public:
 	afx_msg void OnBnClickedBackground();
 	afx_msg void OnBnClickedCd();
 	afx_msg void OnBnClickedZoombieUnbreakable();
+	afx_msg void OnClose();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnBnClickedCourse();
 	CButton m_sunshine;
 	CButton m_unbreakable;
 	CButton m_coin;
@@ -51,10 +57,5 @@ public:
 	CButton m_background;
 	CButton m_zoombieUnbreakable;
 	CButton m_cd;
-	afx_msg void OnClose();
 	CStatic m_copyright;
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-	afx_msg void OnBnClickedCourse();
 };
